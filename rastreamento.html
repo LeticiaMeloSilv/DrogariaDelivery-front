@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Farmácia - Rastreamento de Pedido</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <header>
+    <div class="logo">
+      <img src="https://www.nicepng.com/png/detail/204-2049937_logo-de-farmacia-png.png" alt="Logo">
+      <span>Minha Farmácia</span>
+    </div>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <a href="ofertas.html">Ofertas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="profile.html" id="perfil-link">Perfil</a>
+      <a href="cart.html" id="cart-link">Carrinho</a>
+    </nav>
+  </header>
+
+  <!-- Modal de Login/Cadastro -->
+  <div id="modalLogin" class="modal">
+    <div class="modal-content">
+      <span onclick="fecharModal()" class="close-button">X</span>
+      
+      <!-- Formulário de Cadastro -->
+      <form id="formCadastro">
+        <h2>Cadastro</h2>
+        <input type="text" id="cadastro-nome" placeholder="Nome completo" required>
+        <input type="text" id="cadastro-rg" placeholder="RG" required>
+        <input type="date" id="cadastro-data" placeholder="Data de nascimento" required>
+        <input type="email" id="cadastro-email" placeholder="E-mail" required>
+        <input type="password" id="cadastro-senha" placeholder="Senha" required>
+        <input type="text" id="cadastro-cpf" placeholder="CPF" required>
+        <button class="btn" type="submit">Cadastrar</button>
+        <div class="switch">
+          Já tem conta? <a onclick="toggleForms()">Login</a>
+        </div>
+      </form>
+
+      <!-- Formulário de Login -->
+      <form id="formLogin" class="hidden">
+        <h2>Login</h2>
+        <input type="email" id="login-email" placeholder="E-mail" required>
+        <input type="password" id="login-senha" placeholder="Senha" required>
+        <button class="btn" type="button" id="btn-login">Entrar</button>
+        <div class="switch">
+          Ainda não tem conta? <a onclick="toggleForms()">Cadastre-se</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Conteúdo da Página -->
+  <div class="container">
+    <div class="rastreamento-container">
+      <!-- Mensagem para usuários não logados -->
+      <div id="not-logged-message" class="hidden">
+        <h2>Rastreamento de Pedido</h2>
+        <p>Você precisa fazer login para rastrear seus pedidos.</p>
+        <button class="btn" onclick="abrirModal()">Fazer Login</button>
+      </div>
+
+      <!-- Conteúdo para usuários logados -->
+      <div id="rastreamento-content" class="hidden">
+        <h2>Rastreamento de Pedido <span id="pedido-id"></span></h2>
+        
+        <!-- Informações do pedido -->
+        <div class="rastreamento-info">
+          <div class="info-card">
+            <h3>Informações do Pedido</h3>
+            <p><strong>Data:</strong> <span id="pedido-data"></span></p>
+            <p><strong>Status:</strong> <span id="pedido-status"></span></p>
+            <p><strong>Total:</strong> <span id="pedido-total"></span></p>
+            <p><strong>Método de Pagamento:</strong> <span id="pedido-pagamento"></span></p>
+          </div>
+          
+          <div class="info-card">
+            <h3>Informações do Entregador</h3>
+            <div id="entregador-info">
+              <p><strong>Nome:</strong> <span id="entregador-nome"></span></p>
+              <p><strong>Veículo:</strong> <span id="entregador-veiculo"></span></p>
+              <p><strong>Placa:</strong> <span id="entregador-placa"></span></p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Timeline de rastreamento -->
+        <div class="rastreamento-timeline">
+          <h3>Status da Entrega</h3>
+          <div class="timeline" id="timeline">
+            <!-- Os status serão carregados dinamicamente via JavaScript -->
+          </div>
+        </div>
+        
+        <!-- Mapa de rastreamento (simulado) -->
+        <div class="rastreamento-mapa">
+          <h3>Localização Atual</h3>
+          <div class="mapa-container" id="mapa-container">
+            <img src="https://maps.googleapis.com/maps/api/staticmap?center=São+Paulo,SP&zoom=13&size=600x300&maptype=roadmap&markers=color:red%7CSão+Paulo,SP&key=YOUR_API_KEY" alt="Mapa de localização" id="mapa-imagem">
+            <div class="mapa-overlay">
+              <p>Tempo estimado de entrega: <span id="tempo-estimado">25-35 minutos</span></p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Botões de ação -->
+        <div class="rastreamento-acoes">
+          <button class="btn" id="btn-voltar-pedidos">Voltar para Meus Pedidos</button>
+          <button class="btn btn-secondary" id="btn-contatar-entregador">Contatar Entregador</button>
+        </div>
+      </div>
+      
+      <!-- Mensagem para pedido não encontrado -->
+      <div id="pedido-nao-encontrado" class="hidden">
+        <h2>Pedido não encontrado</h2>
+        <p>O pedido que você está tentando rastrear não foi encontrado ou não está em andamento.</p>
+        <a href="pedidos.html" class="btn">Ver Meus Pedidos</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Variáveis globais
+    let currentPedido = null;
+    let currentEntregador = null;
+    
+    // Status de rastreamento simulados
+    const statusTimeline = [
+      { status: 'Pedido recebido', data: '', concluido: false },
+      { status: 'Pedido aceito', data: '', concluido: false },
+      { status: 'Pedido separado', data: '', concluido: false },
+      { status: 'A caminho', data: '', concluido: false },
+      { status: 'Entregue', data: '', concluido: false }
+    ];
+
+    // Função para abrir o modal
+    function abrirModal() {
+      document.getElementById('modalLogin').style.display = 'flex';
+    }
+
+    // Função para fechar o modal
+    function fecharModal() {
+      document.getElementById('modalLogin').style.display = 'none';
+    }
+
+    // Alterna entre o formulário de cadastro e o de login
+    function toggleForms() {
+      const cadastroForm = document.getElementById('formCadastro');
+      const loginForm = document.getElementById('formLogin');
+      cadastroForm.classList.toggle('hidden');
+      loginForm.classList.toggle('hidden');
+    }
+
+    // Formatar data para exibição
+    function formatarData(dataString) {
+      const data = new Date(dataString);
+      return data.toLocaleDateString('pt-BR') + ' ' + data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+    }
+
+    // Obter ID do pedido da URL
+    function getPedidoIdFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return parseInt(urlParams.get('id'));
+    }
+
+    // Carregar dados do pedido
+    async function carregarDadosPedido() {
+      const isLoggedIn = await window.appFunctions.isLoggedIn();
+      const notLoggedMessage = document.getElementById('not-logged-message');
+      const rastreamentoContent = document.getElementById('rastreamento-content');
+      const pedidoNaoEncontrado = document.getElementById('pedido-nao-encontrado');
+      
+      if (!isLoggedIn) {
+        notLoggedMessage.classList.remove('hidden');
+        rastreamentoContent.classList.add('hidden');
+        pedidoNaoEncontrado.classList.add('hidden');
+        return;
+      }
+      
+      const pedidoId = getPedidoIdFromUrl();
+      if (!pedidoId) {
+        notLoggedMessage.classList.add('hidden');
+        rastreamentoContent.classList.add('hidden');
+        pedidoNaoEncontrado.classList.remove('hidden');
+        return;
+      }
+      
+      currentPedido = await window.appFunctions.getPedidoById(pedidoId);
+      if (!currentPedido || currentPedido.status_pedido === 'Pedido cancelado' || currentPedido.status_pedido === 'Entregue') {
+        notLoggedMessage.classList.add('hidden');
+        rastreamentoContent.classList.add('hidden');
+        pedidoNaoEncontrado.classList.remove('hidden');
+        return;
+      }
+      
+      // Pedido encontrado e em andamento
+      notLoggedMessage.classList.add('hidden');
+      rastreamentoContent.classList.remove('hidden');
+      pedidoNaoEncontrado.classList.add('hidden');
+      
+      // Preencher dados do pedido
+      document.getElementById('pedido-id').textContent = `#${currentPedido.id_pedido}`;
+      document.getElementById('pedido-data').textContent = formatarData(currentPedido.data_pedido);
+      document.getElementById('pedido-status').textContent = currentPedido.status_pedido;
+      document.getElementById('pedido-total').textContent = `R$ ${currentPedido.total.toFixed(2).replace('.', ',')}`;
+      document.getElementById('pedido-pagamento').textContent = currentPedido.pagamento.metodo_pagamento;
+      
+      // Buscar dados do entregador (simulado)
+      buscarDadosEntregador(currentPedido.id_entregador);
+      
+      // Atualizar timeline de status
+      atualizarTimeline();
+      
+      // Simular atualização de localização
+      simularAtualizacaoLocalizacao();
+    }
+
+    // Buscar dados do entregador (simulado)
+    function buscarDadosEntregador(entregadorId) {
+      // Simular busca no backend
+      const entregadores = [
+        { id: 1, nome: 'Isabel Jesus', veiculo: 'Honda (Preto)', placa: 'UMB-1410' },
+        { id: 2, nome: 'Caroline Pereira', veiculo: 'Honda (Azul)', placa: 'YZX-9252' },
+        { id: 3, nome: 'Maria Eduarda Castro', veiculo: 'Suzuki (Cinza)', placa: 'ABC-1234' }
+      ];
+      
+      currentEntregador = entregadores.find(e => e.id === entregadorId);
+      
+      if (currentEntregador) {
+        document.getElementById('entregador-nome').textContent = currentEntregador.nome;
+        document.getElementById('entregador-veiculo').textContent = currentEntregador.veiculo;
+        document.getElementById('entregador-placa').textContent = currentEntregador.placa;
+      }
+    }
+
+    // Atualizar timeline de status
+    function atualizarTimeline() {
+      const timeline = document.getElementById('timeline');
+      timeline.innerHTML = '';
+      
+      // Determinar quais status já foram concluídos
+      const statusAtual = currentPedido.status_pedido;
+      let statusAtualEncontrado = false;
+      
+      statusTimeline.forEach(status => {
+        if (status.status === 'Pedido cancelado') return; // Ignorar status de cancelamento na timeline
+        
+        if (statusAtualEncontrado) {
+          status.concluido = false;
+        } else {
+          status.concluido = true;
+          if (status.status === statusAtual) {
+            statusAtualEncontrado = true;
+          }
+        }
+        
+        // Simular datas para status concluídos
+        if (status.concluido) {
+          // Gerar data simulada (pedido recebido é a data do pedido, os outros são incrementais)
+          const dataPedido = new Date(currentPedido.data_pedido);
+          if (status.status === 'Pedido recebido') {
+            status.data = formatarData(dataPedido);
+          } else {
+            // Adicionar minutos aleatórios para cada status
+            dataPedido.setMinutes(dataPedido.getMinutes() + Math.floor(Math.random() * 30) + 10);
+            status.data = formatarData(dataPedido);
+          }
+        }
+        
+        // Criar elemento de timeline
+        const statusElement = document.createElement('div');
+        statusElement.className = `timeline-item ${status.concluido ? 'completed' : ''}`;
+        
+        statusElement.innerHTML = `
+          <div class="timeline-marker"></div>
+          <div class="timeline-content">
+            <h4>${status.status}</h4>
+            ${status.data ? `<p>${status.data}</p>` : ''}
+          </div>
+        `;
+        
+        timeline.appendChild(statusElement);
+      });
+    }
+
+    // Simular atualização de localização
+    function simularAtualizacaoLocalizacao() {
+      // Apenas para pedidos em trânsito
+      if (currentPedido.status_pedido !== 'A caminho') return;
+      
+      // Simular atualização do tempo estimado
+      const tempoEstimado = document.getElementById('tempo-estimado');
+      
+      // Atualizar a cada 30 segundos
+      setInterval(() => {
+        const minutos = Math.floor(Math.random() * 15) + 15; // 15-30 minutos
+        tempoEstimado.textContent = `${minutos}-${minutos + 10} minutos`;
+      }, 30000);
+      
+      // Primeira atualização imediata
+      const minutos = Math.floor(Math.random() * 15) + 15; // 15-30 minutos
+      tempoEstimado.textContent = `${minutos}-${minutos + 10} minutos`;
+    }
+
+    // Atualizar badge do carrinho
+    async function atualizarBadgeCarrinho() {
+      const cartItems = await window.appFunctions.getCart();
+      const cartLink = document.getElementById('cart-link');
+      
+      if (cartItems.length > 0) {
+        const totalItems = cartItems.reduce((sum, item) => sum + item.quantidade, 0);
+        
+        // Verificar se já existe um badge
+        let badge = cartLink.querySelector('.cart-badge');
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'cart-badge';
+          cartLink.appendChild(badge);
+        }
+        
+        badge.textContent = totalItems;
+      } else {
+        // Remover badge se carrinho estiver vazio
+        const badge = cartLink.querySelector('.cart-badge');
+        if (badge) {
+          badge.remove();
+        }
+      }
+    }
+
+    // Configurar botões de ação
+    function configurarBotoes() {
+      // Botão para voltar para pedidos
+      document.getElementById('btn-voltar-pedidos').addEventListener('click', () => {
+        window.location.href = 'pedidos.html';
+      });
+      
+      // Botão para contatar entregador
+      document.getElementById('btn-contatar-entregador').addEventListener('click', () => {
+        alert('Funcionalidade de contato com entregador em desenvolvimento.');
+      });
+    }
+
+    // Configurar formulários de login e cadastro
+    function configurarFormularios() {
+      // Formulário de login
+      document.getElementById('btn-login').addEventListener('click', async () => {
+        const email = document.getElementById('login-email').value;
+        const senha = document.getElementById('login-senha').value;
+        
+        const resultado = await window.appFunctions.login(email, senha);
+        
+        if (resultado.success) {
+          alert('Login realizado com sucesso!');
+          fecharModal();
+          window.location.reload(); // Recarregar para atualizar a UI
+        } else {
+          alert(`Erro no login: ${resultado.message}`);
+        }
+      });
+      
+      // Formulário de cadastro
+      document.getElementById('formCadastro').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const nome = document.getElementById('cadastro-nome').value;
+        const rg = document.getElementById('cadastro-rg').value;
+        const dataNascimento = document.getElementById('cadastro-data').value;
+        const email = document.getElementById('cadastro-email').value;
+        const senha = document.getElementById('cadastro-senha').value;
+        const cpf = document.getElementById('cadastro-cpf').value;
+        
+        const resultado = await window.appFunctions.cadastrar(nome, dataNascimento, email, senha, cpf, rg);
+        
+        if (resultado.success) {
+          alert('Cadastro realizado com sucesso!');
+          fecharModal();
+          window.location.reload(); // Recarregar para atualizar a UI
+        } else {
+          alert(`Erro no cadastro: ${resultado.message}`);
+        }
+      });
+    }
+
+    // Configurar link de perfil
+    function configurarPerfilLink() {
+      const perfilLink = document.getElementById('perfil-link');
+      
+      perfilLink.addEventListener('click', async (e) => {
+        if (!await window.appFunctions.isLoggedIn()) {
+          e.preventDefault();
+          abrirModal();
+        }
+      });
+    }
+
+    // Inicialização quando o DOM estiver carregado
+    document.addEventListener('DOMContentLoaded', async () => {
+      carregarDadosPedido();
+      configurarBotoes();
+      configurarFormularios();
+      configurarPerfilLink();
+      atualizarBadgeCarrinho();
+      
+      // Atualizar UI com base no estado de login
+      if (await window.appFunctions.isLoggedIn()) {
+        const user = await window.appFunctions.getCurrentUser();
+        document.getElementById('perfil-link').textContent = `Olá, ${user.nome.split(' ')[0]}`;
+      }
+    });
+  </script>
+</body>
+</html>

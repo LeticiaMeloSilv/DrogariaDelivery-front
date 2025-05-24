@@ -1,0 +1,400 @@
+{
+  "tbl_produtos": [
+    {
+      "id_produto": 1,
+      "nome": "Paracetamol 750mg",
+      "descricao": "Analgésico e antitérmico indicado para o alívio temporário de dores de cabeça, febre e dores musculares.",
+      "preco": 12.99,
+      "quantidade": 45,
+      "gramatura": 0.75,
+      "foto": "img/produtos/paracetamol.jpg",
+      "prescricao": false
+    },
+    {
+      "id_produto": 2,
+      "nome": "Vitamina C 1000mg",
+      "descricao": "Suplemento vitamínico que auxilia no fortalecimento do sistema imunológico e na absorção de ferro.",
+      "preco": 19.90,
+      "quantidade": 28,
+      "gramatura": 1.0,
+      "foto": "img/produtos/vitamina_c.jpg",
+      "prescricao": false
+    },
+    {
+      "id_produto": 3,
+      "nome": "Amoxicilina 500mg",
+      "descricao": "Antibiótico de amplo espectro utilizado no tratamento de infecções bacterianas.",
+      "preco": 32.50,
+      "quantidade": 12,
+      "gramatura": 0.5,
+      "foto": "img/produtos/amoxicilina.jpg",
+      "prescricao": true
+    },
+    {
+      "id_produto": 4,
+      "nome": "Creme Facial Hidratante",
+      "descricao": "Creme hidratante facial para todos os tipos de pele, com proteção UV e vitamina E.",
+      "preco": 35.00,
+      "quantidade": 35,
+      "gramatura": 50.0,
+      "foto": "img/produtos/creme_facial.jpg",
+      "prescricao": false
+    },
+    {
+      "id_produto": 5,
+      "nome": "Rivotril 2mg",
+      "descricao": "Medicamento controlado indicado para tratamento de transtornos de ansiedade e convulsões.",
+      "preco": 25.75,
+      "quantidade": 20,
+      "gramatura": 0.002,
+      "foto": "img/produtos/rivotril.jpg",
+      "prescricao": true
+    },
+    {
+      "id_produto": 6,
+      "nome": "Protetor Solar FPS 50",
+      "descricao": "Protetor solar com alta proteção contra raios UVA e UVB, resistente à água.",
+      "preco": 45.90,
+      "quantidade": 15,
+      "gramatura": 120.0,
+      "foto": "img/produtos/protetor_solar.jpg",
+      "prescricao": false
+    },
+    {
+      "id_produto": 7,
+      "nome": "Dipirona 500mg",
+      "descricao": "Analgésico e antitérmico para alívio de dores e febre.",
+      "preco": 8.50,
+      "quantidade": 60,
+      "gramatura": 0.5,
+      "foto": "img/produtos/dipirona.jpg",
+      "prescricao": false
+    },
+    {
+      "id_produto": 8,
+      "nome": "Insulina Lantus",
+      "descricao": "Insulina de ação prolongada para controle da diabetes.",
+      "preco": 120.00,
+      "quantidade": 8,
+      "gramatura": 10.0,
+      "foto": "img/produtos/insulina.jpg",
+      "prescricao": true
+    }
+  ],
+  "tbl_clientes": [
+    {
+      "id_cliente": 1,
+      "nome": "Marcela Duarte",
+      "data_nascimento": "1974-06-07",
+      "data_cadastro": "2024-12-15 10:30:22",
+      "email": "marcela.duarte@email.com",
+      "senha": "12345678",
+      "cpf": "936.142.075-52",
+      "rg": "16.628.840"
+    },
+    {
+      "id_cliente": 2,
+      "nome": "Enzo Caldeira",
+      "data_nascimento": "1956-07-31",
+      "data_cadastro": "2025-01-05 14:22:10",
+      "email": "enzo.caldeira@email.com",
+      "senha": "hash_senha_456",
+      "cpf": "574.980.213-23",
+      "rg": "91.880.640"
+    },
+    {
+      "id_cliente": 3,
+      "nome": "Fabiana Ribeiro",
+      "data_nascimento": "1958-08-17",
+      "data_cadastro": "2025-02-18 09:15:45",
+      "email": "fabiana.ribeiro@email.com",
+      "senha": "hash_senha_789",
+      "cpf": "160.937.357-71",
+      "rg": "69.732.810"
+    },
+    {
+      "id_cliente": 4,
+      "nome": "Adriano Barros",
+      "data_nascimento": "1996-03-14",
+      "data_cadastro": "2025-03-01 16:40:33",
+      "email": "adriano.barros@email.com",
+      "senha": "hash_senha_012",
+      "cpf": "326.905.376-95",
+      "rg": "83.154.490"
+    },
+    {
+      "id_cliente": 5,
+      "nome": "Matheus Fogaça",
+      "data_nascimento": "1984-09-11",
+      "data_cadastro": "2025-03-10 11:05:18",
+      "email": "matheus.fogaca@email.com",
+      "senha": "hash_senha_345",
+      "cpf": "872.069.454-45",
+      "rg": "21.932.440"
+    }
+  ],
+  "tbl_entregadores": [
+    {
+      "id_entregador": 1,
+      "nome": "Isabel Jesus",
+      "data_nascimento": "2006-10-22",
+      "data_cadastro": "2024-11-05 08:30:15",
+      "email": "isabel.jesus@email.com",
+      "senha": "hash_senha_678",
+      "cpf": "958.172.046-49",
+      "rg": "15.469.300",
+      "cnh": "57265899945",
+      "foto_documento_automovel": "uploads/documentos/moto_isabel.jpg",
+      "marca": "Honda",
+      "cor": "Preto",
+      "placa": "UMB-1410"
+    },
+    {
+      "id_entregador": 2,
+      "nome": "Caroline Pereira",
+      "data_nascimento": "1997-01-12",
+      "data_cadastro": "2025-01-10 13:45:22",
+      "email": "caroline.pereira@email.com",
+      "senha": "hash_senha_901",
+      "cpf": "304.716.582-35",
+      "rg": "78.610.380",
+      "cnh": "51749560510",
+      "foto_documento_automovel": "uploads/documentos/moto_caroline.jpg",
+      "marca": "Honda",
+      "cor": "Azul",
+      "placa": "YZX-9252"
+    },
+    {
+      "id_entregador": 3,
+      "nome": "Maria Eduarda Castro",
+      "data_nascimento": "1988-04-03",
+      "data_cadastro": "2025-02-20 09:15:30",
+      "email": "maria.castro@email.com",
+      "senha": "hash_senha_234",
+      "cpf": "123.456.789-00",
+      "rg": "45.678.900",
+      "cnh": "77889966555",
+      "foto_documento_automovel": "uploads/documentos/moto_maria.jpg",
+      "marca": "Suzuki",
+      "cor": "Cinza",
+      "placa": "ABC-1234"
+    }
+  ],
+  "tbl_pedidos": [
+    {
+      "id_pedido": 1,
+      "id_cliente": 1,
+      "status_pedido": "A caminho",
+      "data_pedido": "2025-05-23 10:30:15",
+      "id_entregador": 1,
+      "produtos": [
+        {
+          "id_produto": 1,
+          "nome": "Paracetamol 750mg",
+          "quantidade": 2,
+          "preco_unitario": 12.99,
+          "subtotal": 25.98
+        },
+        {
+          "id_produto": 2,
+          "nome": "Vitamina C 1000mg",
+          "quantidade": 1,
+          "preco_unitario": 19.90,
+          "subtotal": 19.90
+        }
+      ],
+      "id_laudo": 1,
+      "id_pagamento": 1,
+      "total": 45.88,
+      "frete": 10.00
+    },
+    {
+      "id_pedido": 2,
+      "id_cliente": 1,
+      "status_pedido": "Entregue",
+      "data_pedido": "2025-02-23 10:30:15",
+      "id_entregador": 1,
+      "produtos": [
+        {
+          "id_produto": 2,
+          "nome": "Vitamina C 1000mg",
+          "quantidade": 1,
+          "preco_unitario": 19.90,
+          "subtotal": 19.90
+        }
+      ],
+      "id_laudo": 1,
+      "id_pagamento": 1,
+      "total": 45.88,
+      "frete": 10.00
+    },
+    {
+      "id_pedido": 2,
+      "id_cliente": 2,
+      "status_pedido": "Pedido aceito",
+      "data_pedido": "2025-05-23 14:22:30",
+      "id_entregador": 3,
+      "produtos": [
+        {
+          "id_produto": 4,
+          "nome": "Creme Facial Hidratante",
+          "quantidade": 1,
+          "preco_unitario": 35.00,
+          "subtotal": 35.00
+        }
+      ],
+      "id_laudo": null,
+      "id_pagamento": 2,
+      "total": 35.00,
+      "frete": 8.00
+    },
+    {
+      "id_pedido": 3,
+      "id_cliente": 3,
+      "status_pedido": "A caminho",
+      "data_pedido": "2025-05-23 16:15:45",
+      "id_entregador": 2,
+      "produtos": [
+        {
+          "id_produto": 3,
+          "nome": "Amoxicilina 500mg",
+          "quantidade": 1,
+          "preco_unitario": 32.50,
+          "subtotal": 32.50
+        },
+        {
+          "id_produto": 7,
+          "nome": "Dipirona 500mg",
+          "quantidade": 2,
+          "preco_unitario": 8.50,
+          "subtotal": 17.00
+        }
+      ],
+      "id_laudo": 3,
+      "id_pagamento": 3,
+      "total": 49.50,
+      "frete": 12.00
+    },
+    {
+      "id_pedido": 4,
+      "id_cliente": 4,
+      "status_pedido": "Entregue",
+      "data_pedido": "2025-05-22 09:30:00",
+      "id_entregador": 1,
+      "produtos": [
+        {
+          "id_produto": 6,
+          "nome": "Protetor Solar FPS 50",
+          "quantidade": 1,
+          "preco_unitario": 45.90,
+          "subtotal": 45.90
+        },
+        {
+          "id_produto": 4,
+          "nome": "Creme Facial Hidratante",
+          "quantidade": 1,
+          "preco_unitario": 35.00,
+          "subtotal": 35.00
+        }
+      ],
+      "id_laudo": null,
+      "id_pagamento": 4,
+      "total": 80.90,
+      "frete": 10.00
+    },
+    {
+      "id_pedido": 5,
+      "id_cliente": 5,
+      "status_pedido": "Pedido recebido",
+      "data_pedido": "2025-05-24 08:45:20",
+      "id_entregador": 3,
+      "produtos": [
+        {
+          "id_produto": 5,
+          "nome": "Rivotril 2mg",
+          "quantidade": 1,
+          "preco_unitario": 25.75,
+          "subtotal": 25.75
+        }
+      ],
+      "id_laudo": 5,
+      "id_pagamento": 5,
+      "total": 25.75,
+      "frete": 8.00
+    }
+  ],
+  "tbl_laudos": [
+    {
+      "id_laudo": 1,
+      "descricao": "Receita para medicamento controlado - Paciente com ansiedade",
+      "foto_laudo": "uploads/laudos/receita_ansiedade.jpg",
+      "data_laudo": "2025-05-23 10:25:30"
+    },
+    {
+      "id_laudo": 2,
+      "descricao": "Receita para antibiótico - Tratamento de infecção respiratória",
+      "foto_laudo": "uploads/laudos/receita_antibiotico.jpg",
+      "data_laudo": "2025-05-23 14:20:15"
+    },
+    {
+      "id_laudo": 3,
+      "descricao": "Receita para antibiótico - Tratamento de infecção urinária",
+      "foto_laudo": "uploads/laudos/receita_infeccao.jpg",
+      "data_laudo": "2025-05-23 16:10:22"
+    },
+    {
+      "id_laudo": 4,
+      "descricao": "Receita para medicamento controlado - Tratamento de insônia",
+      "foto_laudo": "uploads/laudos/receita_insonia.jpg",
+      "data_laudo": "2025-05-22 09:25:18"
+    },
+    {
+      "id_laudo": 5,
+      "descricao": "Receita para medicamento controlado - Tratamento de epilepsia",
+      "foto_laudo": "uploads/laudos/receita_epilepsia.jpg",
+      "data_laudo": "2025-05-24 08:40:10"
+    }
+  ],
+  "tbl_pagamentos": [
+    {
+      "id_pagamento": 1,
+      "metodo_pagamento": "Pix",
+      "status_pagamento": "Pendente",
+      "total": 45.88,
+      "frete": 10.00,
+      "data_pagamento": "2025-05-23 10:32:45"
+    },
+    {
+      "id_pagamento": 2,
+      "metodo_pagamento": "Débito",
+      "status_pagamento": "Pago",
+      "total": 35.00,
+      "frete": 8.00,
+      "data_pagamento": "2025-05-23 14:25:10"
+    },
+    {
+      "id_pagamento": 3,
+      "metodo_pagamento": "Cartão de crédito",
+      "status_pagamento": "Pago",
+      "total": 49.50,
+      "frete": 12.00,
+      "data_pagamento": "2025-05-23 16:18:30"
+    },
+    {
+      "id_pagamento": 4,
+      "metodo_pagamento": "Boleto",
+      "status_pagamento": "Pago",
+      "total": 80.90,
+      "frete": 10.00,
+      "data_pagamento": "2025-05-22 09:35:22"
+    },
+    {
+      "id_pagamento": 5,
+      "metodo_pagamento": "Pix",
+      "status_pagamento": "Pendente",
+      "total": 25.75,
+      "frete": 8.00,
+      "data_pagamento": "2025-05-24 08:47:15"
+    }
+  ]
+}

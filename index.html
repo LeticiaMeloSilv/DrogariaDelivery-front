@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Farmácia - Início</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <header>
+    <div class="logo">
+      <img src="https://www.nicepng.com/png/detail/204-2049937_logo-de-farmacia-png.png" alt="Logo">
+      <span>Minha Farmácia</span>
+    </div>
+    <nav class="menu">
+      <a href="index.html" class="active">Início</a>
+      <a href="ofertas.html">Ofertas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="profile.html" id="perfil-link">Perfil</a>
+      <a href="cart.html" id="cart-link">Carrinho</a>
+    </nav>
+  </header>
+
+  <!-- Banner -->
+  <div class="banner">
+    <div class="banner-content">
+      <h1>Sua saúde em primeiro lugar</h1>
+      <p>Encontre medicamentos, vitaminas e produtos de beleza com entrega rápida</p>
+    </div>
+  </div>
+<div class="search-box">
+      <input type="text" id="search-input" placeholder="Buscar produtos, marcas ou categorias...">
+      <button id="search-button" class="search-button">Buscar</button>
+    </div>
+  <!-- Modal de Login/Cadastro -->
+  <div id="modalLogin" class="modal">
+    <div class="modal-content">
+      <span onclick="fecharModal()" class="close-button">X</span>
+      
+      <!-- Formulário de Cadastro -->
+      <form id="formCadastro">
+        <h2>Cadastro</h2>
+        <input type="text" id="cadastro-nome" placeholder="Nome completo" required>
+        <input type="text" id="cadastro-rg" placeholder="RG" required>
+        <input type="date" id="cadastro-data" placeholder="Data de nascimento" required>
+        <input type="email" id="cadastro-email" placeholder="E-mail" required>
+        <input type="password" id="cadastro-senha" placeholder="Senha" required>
+        <input type="text" id="cadastro-cpf" placeholder="CPF" required>
+        <button class="btn" type="submit">Cadastrar</button>
+        <div class="switch">
+          Já tem conta? <a onclick="toggleForms()">Login</a>
+        </div>
+      </form>
+
+      <!-- Formulário de Login -->
+      <form id="formLogin" class="hidden">
+        <h2>Login</h2>
+        <input type="email" id="login-email" placeholder="E-mail" required>
+        <input type="password" id="login-senha" placeholder="Senha" required>
+        <button class="btn" type="button" id="btn-login">Entrar</button>
+        <div class="switch">
+          Ainda não tem conta? <a onclick="toggleForms()">Cadastre-se</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Categorias -->
+    <h3 class="section-title">Categorias</h3>
+    <div class="categories">
+      <div class="category" data-category="Vitaminas">
+        <img src="https://cdn-icons-png.flaticon.com/512/5488/5488379.png" alt="Vitaminas">
+        <p>Vitaminas</p>
+      </div>
+      <div class="category" data-category="Dor e Febre">
+        <img src="https://cdn-icons-png.flaticon.com/128/4813/4813743.png" alt="Dor e Febre">
+        <p>Dor e Febre</p>
+      </div>
+      <div class="category" data-category="Beleza">
+        <img src="https://cdn-icons-png.flaticon.com/512/2437/2437731.png" alt="Beleza">
+        <p>Beleza</p>
+      </div>
+      <div class="category" data-category="Infantil">
+        <img src="https://cdn-icons-png.flaticon.com/128/3088/3088419.png" alt="Infantil">
+        <p>Infantil</p>
+      </div>
+    </div>
+
+    <!-- Produtos -->
+    <div class="products">
+      <h3 class="section-title">Mais Vendidos</h3>
+      <div class="product-list" id="produtos-destaque">
+        <!-- Os produtos serão carregados dinamicamente via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Função para abrir o modal
+    function abrirModal() {
+      document.getElementById('modalLogin').style.display = 'flex';
+    }
+
+    // Função para fechar o modal
+    function fecharModal() {
+      document.getElementById('modalLogin').style.display = 'none';
+    }
+
+    // Alterna entre o formulário de cadastro e o de login
+    function toggleForms() {
+      const cadastroForm = document.getElementById('formCadastro');
+      const loginForm = document.getElementById('formLogin');
+      cadastroForm.classList.toggle('hidden');
+      loginForm.classList.toggle('hidden');
+    }
+
+    // Carregar produtos em destaque
+    async function carregarProdutosDestaque() {
+      const produtosContainer = document.getElementById('produtos-destaque');
+      const produtos = await window.appFunctions.getProdutos(); // Pegar os primeiros 4 produtos
+      
+      produtosContainer.innerHTML = '';
+      
+      produtos.forEach(produto => {
+        const produtoElement = document.createElement('div');
+        produtoElement.className = 'product';
+        produtoElement.dataset.id = produto.id_produto;
+        
+        // Adicionar badge de prescrição se necessário
+        const prescricaoBadge = produto.prescricao ? 
+          '<span class="prescription-badge">Requer receita</span>' : '';
+        
+        produtoElement.innerHTML = `
+          ${prescricaoBadge}
+          <img src="${produto.foto}" alt="${produto.nome}">
+          <h4>${produto.nome}</h4>
+          <p>R$ ${produto.preco.toFixed(2).replace('.', ',')}</p>
+        `;
+        
+        produtoElement.addEventListener('click', () => {
+          window.location.href = `product_details.html?id=${produto.id_produto}`;
+        });
+        
+        produtosContainer.appendChild(produtoElement);
+      });
+    }
+
+    // Configurar eventos de busca
+    function configurarBusca() {
+      const searchInput = document.getElementById('search-input');
+      const searchButton = document.getElementById('search-button');
+      
+      searchButton.addEventListener('click', () => {
+        const termo = searchInput.value.trim();
+        if (termo) {
+          window.location.href = `categorias.html?busca=${encodeURIComponent(termo)}`;
+        }
+      });
+      
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          searchButton.click();
+        }
+      });
+    }
+
+    // Configurar eventos de categoria
+    function configurarCategorias() {
+      const categorias = document.querySelectorAll('.category');
+      
+      categorias.forEach(categoria => {
+        categoria.addEventListener('click', () => {
+          const nomeCategoria = categoria.dataset.category;
+          window.location.href = `categorias.html?categoria=${encodeURIComponent(nomeCategoria)}`;
+        });
+      });
+    }
+
+    // Configurar formulários de login e cadastro
+    function configurarFormularios() {
+      // Formulário de login
+      document.getElementById('btn-login').addEventListener('click', async () => {
+        const email = document.getElementById('login-email').value;
+        const senha = document.getElementById('login-senha').value;
+        
+        const resultado = await window.appFunctions.login(email, senha);
+        
+        if (resultado.success) {
+          alert('Login realizado com sucesso!');
+          fecharModal();
+          window.location.reload(); // Recarregar para atualizar a UI
+        } else {
+          alert(`Erro no login: ${resultado.message}`);
+        }
+      });
+      
+      // Formulário de cadastro
+      document.getElementById('formCadastro').addEventListener('submit',async (e) => {
+        e.preventDefault();
+        
+        const nome = document.getElementById('cadastro-nome').value;
+        const rg = document.getElementById('cadastro-rg').value;
+        const dataNascimento = document.getElementById('cadastro-data').value;
+        const email = document.getElementById('cadastro-email').value;
+        const senha = document.getElementById('cadastro-senha').value;
+        const cpf = document.getElementById('cadastro-cpf').value;
+        
+        const resultado = await window.appFunctions.cadastrar(nome, dataNascimento, email, senha, cpf, rg);
+        
+        if (resultado.success) {
+          alert('Cadastro realizado com sucesso!');
+          fecharModal();
+          window.location.reload(); // Recarregar para atualizar a UI
+        } else {
+          alert(`Erro no cadastro: ${resultado.message}`);
+        }
+      });
+    }
+
+    // Configurar link de perfil
+    function configurarPerfilLink() {
+      const perfilLink = document.getElementById('perfil-link');
+      
+      perfilLink.addEventListener('click', async (e) => {
+        if (!await window.appFunctions.isLoggedIn()) {
+          e.preventDefault();
+          abrirModal();
+        }
+      });
+    }
+
+    // Atualizar badge do carrinho
+    async function atualizarBadgeCarrinho() {
+      const cartItems = await window.appFunctions.getCart();
+      const cartLink = document.getElementById('cart-link');
+      
+      if (cartItems.length > 0) {
+        const totalItems = cartItems.reduce((sum, item) => sum + item.quantidade, 0);
+        
+        // Verificar se já existe um badge
+        let badge = cartLink.querySelector('.cart-badge');
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'cart-badge';
+          cartLink.appendChild(badge);
+        }
+        
+        badge.textContent = totalItems;
+      } else {
+        // Remover badge se carrinho estiver vazio
+        const badge = cartLink.querySelector('.cart-badge');
+        if (badge) {
+          badge.remove();
+        }
+      }
+    }
+
+    // Inicialização quando o DOM estiver carregado
+    document.addEventListener('DOMContentLoaded', async () => {
+      carregarProdutosDestaque();
+      configurarBusca();
+      configurarCategorias();
+      configurarFormularios();
+      configurarPerfilLink();
+      atualizarBadgeCarrinho();
+      
+      // Atualizar UI com base no estado de login
+      if (await window.appFunctions.isLoggedIn()) {
+        const user = await window.appFunctions.getCurrentUser();
+        document.getElementById('perfil-link').textContent = `Olá, ${user.nome.split(' ')[0]}`;
+      }
+    });
+  </script>
+</body>
+</html>

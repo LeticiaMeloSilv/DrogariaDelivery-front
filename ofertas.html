@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Farmácia - Ofertas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <header>
+    <div class="logo">
+      <img src="https://www.nicepng.com/png/detail/204-2049937_logo-de-farmacia-png.png" alt="Logo">
+      <span>Minha Farmácia</span>
+    </div>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <a href="ofertas.html" class="active">Ofertas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="profile.html" id="perfil-link">Perfil</a>
+      <a href="cart.html" id="cart-link">Carrinho</a>
+    </nav>
+  </header>
+
+  <!-- Modal de Login/Cadastro -->
+  <div id="modalLogin" class="modal">
+    <div class="modal-content">
+      <span onclick="fecharModal()" class="close-button">X</span>
+      
+      <!-- Formulário de Cadastro -->
+      <form id="formCadastro">
+        <h2>Cadastro</h2>
+        <input type="text" id="cadastro-nome" placeholder="Nome completo" required>
+        <input type="text" id="cadastro-rg" placeholder="RG" required>
+        <input type="date" id="cadastro-data" placeholder="Data de nascimento" required>
+        <input type="email" id="cadastro-email" placeholder="E-mail" required>
+        <input type="password" id="cadastro-senha" placeholder="Senha" required>
+        <input type="text" id="cadastro-cpf" placeholder="CPF" required>
+        <button class="btn" type="submit">Cadastrar</button>
+        <div class="switch">
+          Já tem conta? <a onclick="toggleForms()">Login</a>
+        </div>
+      </form>
+
+      <!-- Formulário de Login -->
+      <form id="formLogin" class="hidden">
+        <h2>Login</h2>
+        <input type="email" id="login-email" placeholder="E-mail" required>
+        <input type="password" id="login-senha" placeholder="Senha" required>
+        <button class="btn" type="button" id="btn-login">Entrar</button>
+        <div class="switch">
+          Ainda não tem conta? <a onclick="toggleForms()">Cadastre-se</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Banner de Ofertas -->
+  <div class="offers-banner">
+    <h1>Ofertas Especiais</h1>
+    <p>Aproveite os melhores preços em medicamentos e produtos de saúde</p>
+  </div>
+
+  <!-- Conteúdo da Página -->
+  <div class="container">
+    <div class="offers-container">
+      <div class="search-container">
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="Buscar produtos em oferta...">
+        </div>
+        <button id="search-button" class="search-button">Buscar</button>
+      </div>
+      
+      <div class="offers-grid" id="offers-grid">
+        <!-- As ofertas serão carregadas dinamicamente via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Variáveis globais
+    let searchTerm = '';
+    
+    // Função para abrir o modal
+    function abrirModal() {
+      document.getElementById('modalLogin').style.display = 'flex';
+    }
+
+    // Função para fechar o modal
+    function fecharModal() {
+      document.getElementById('modalLogin').style.display = 'none';
+    }
+
+    // Alterna entre o formulário de cadastro e o de login
+    function toggleForms() {
+      const cadastroForm = document.getElementById('formCadastro');
+      const loginForm = document.getElementById('formLogin');
+      cadastroForm.classList.toggle('hidden');
+      loginForm.classList.toggle('hidden');
+    }
+
+    // Carregar produtos em oferta (simulado)
+    async function carregarOfertas() {
+      const offersGrid = document.getElementById('offers-grid');
+      offersGrid.innerHTML = '';
+      
+      // Simular produtos em oferta (todos os produtos com desconto)
+      const produtos = await window.appFunctions.getProdutos(null, searchTerm);
+      const produtosEmOferta = produtos.map(produto => {
+        // Aplicar desconto aleatório entre 10% e 30%
+        const desconto = Math.floor(Math.random() * 21) + 10; // 10% a 30%
+        const precoOriginal = produto.preco;
+        const precoComDesconto = precoOriginal * (1 - desconto/100);
+        
+        return {
+          ...produto,
+          precoOriginal,
+          precoComDesconto,
+          desconto
+        };
+      });
+      
+      // Exibir produtos em oferta
+      produtosEmOferta.forEach(produto => {
+        const produtoElement = document.createElement('div');
+        produtoElement.className = 'offer-card';
+        produtoElement.dataset.id = produto.id_produto;
+        
+        // Adicionar badge de prescrição se necessário
+        const prescricaoBadge = produto.prescricao ? 
+          '<span class="prescription-badge">Requer receita</span>' : '';
+        
+        produtoElement.innerHTML = `
+          <div class="discount-badge">-${produto.desconto}%</div>
+          <img src="${produto.foto}" alt="${produto.nome}">
+          <h4>${produto.nome}</h4>
+          <p class="product-description">${produto.descricao.substring(0, 60)}${produto.descricao.length > 60 ? '...' : ''}</p>
+          <div class="price-container">
+            <p class="original-price">R$ ${produto.precoOriginal.toFixed(2).replace('.', ',')}</p>
+            <p class="discounted-price">R$ ${produto.precoComDesconto.toFixed(2).replace('.', ',')}</p>
+          </div>
+          ${prescricaoBadge}
+          <div class="offer-buttons">
+            <button class="btn-view-product" data-id="${produto.id_produto}">Ver Detalhes</button>
+            <button class="btn-add-to-cart" data-id="${produto.id_produto}">Adicionar</button>
+          </div>
+        `;
+        
+        // Adicionar evento para ver detalhes do produto
+        produtoElement.querySelector('.btn-view-product').addEventListener('click', () => {
+          window.location.href = `product_details.html?id=${produto.id_produto}`;
+        });
+        
+        // Adicionar evento para adicionar ao carrinho
+        produtoElement.querySelector('.btn-add-to-cart').addEventListener('click', async (e) => {
+          e.stopPropagation();
+          
+          // Verificar se precisa de receita
+          if (produto.prescricao) {
+            const isLoggedIn = await window.appFunctions.isLoggedIn();
+            if (!isLoggedIn) {
+              alert('É necessário fazer login para comprar produtos que exigem receita médica');
+              abrirModal();
+              return;
+            }
+            
+            alert('Este produto requer receita médica. Por favor, anexe uma receita antes de finalizar a compra.');
+          }
+          
+          // Adicionar ao carrinho
+          const resultado = await window.appFunctions.addToCart(produto.id_produto, 1);
+          if (resultado.success) {
+            alert(`${produto.nome} adicionado ao carrinho!`);
+            atualizarBadgeCarrinho();
+            
+            // Redirecionar para o carrinho
+            window.location.href = 'cart.html';
+          } else {
+            alert(`Erro ao adicionar ao carrinho: ${resultado.message}`);
+          }
+        });
+        
+        offersGrid.appendChild(produtoElement);
+      });
+    }
+
+    // Configurar busca
+    function configurarBusca() {
+      const searchInput = document.getElementById('search-input');
+      const searchButton = document.getElementById('search-button');
+      
+      searchButton.addEventListener('click', () => {
+        searchTerm = searchInput.value.trim();
+        carregarOfertas();
+      });
+      
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          searchButton.click();
+        }
+      });
+    }
+
+    // Atualizar badge do carrinho
+    async function atualizarBadgeCarrinho() {
+      const cartItems = await window.appFunctions.getCart();
+      const cartLink = document.getElementById('cart-link');
+      
+      if (cartItems.length > 0) {
+        const totalItems = cartItems.reduce((sum, item) => sum + item.quantidade, 0);
+        
+        // Verificar se já existe um badge
+        let badge = cartLink.querySelector('.cart-badge');
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'cart-badge';
+          cartLink.appendChild(badge);
+        }
+        
+        badge.textContent = totalItems;
+      } else {
+        // Remover badge se carrinho estiver vazio
+        const badge = cartLink.querySelector('.cart-badge');
+        if (badge) {
+          badge.remove();
+        }
+      }
+    }
+
+    // Configurar formulários de login e cadastro
+    function configurarFormularios() {
+      // Formulário de login
+      document.getElementById('btn-login').addEventListener('click', async () => {
+        const email = document.getElementById('login-email').value;
+        const senha = document.getElementById('login-senha').value;
+        
+        const resultado = await window.appFunctions.login(email, senha);
+        
+        if (resultado.success) {
+          alert('Login realizado com sucesso!');
+          fecharModal();
+          window.location.reload(); // Recarregar para atualizar a UI
+        } else {
+          alert(`Erro no login: ${resultado.message}`);
+        }
+      });
+      
+      // Formulário de cadastro
+      document.getElementById('formCadastro').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const nome = document.getElementById('cadastro-nome').value;
+        const rg = document.getElementById('cadastro-rg').value;
+        const dataNascimento = document.getElementById('cadastro-data').value;
+        const email = document.getElementById('cadastro-email').value;
+        const senha = document.getElementById('cadastro-senha').value;
+        const cpf = document.getElementById('cadastro-cpf').value;
+        
+        const resultado = await window.appFunctions.cadastrar(nome, dataNascimento, email, senha, cpf, rg);
+        
+        if (resultado.success) {
+          alert('Cadastro realizado com sucesso!');
+          fecharModal();
+          window.location.reload(); // Recarregar para atualizar a UI
+        } else {
+          alert(`Erro no cadastro: ${resultado.message}`);
+        }
+      });
+    }
+
+    // Configurar link de perfil
+    function configurarPerfilLink() {
+      const perfilLink = document.getElementById('perfil-link');
+      
+      perfilLink.addEventListener('click', async (e) => {
+        if (!await window.appFunctions.isLoggedIn()) {
+          e.preventDefault();
+          abrirModal();
+        }
+      });
+    }
+
+    // Inicialização quando o DOM estiver carregado
+    document.addEventListener('DOMContentLoaded', async () => {
+      carregarOfertas();
+      configurarBusca();
+      configurarFormularios();
+      configurarPerfilLink();
+      atualizarBadgeCarrinho();
+      
+      // Atualizar UI com base no estado de login
+      if (await window.appFunctions.isLoggedIn()) {
+        const user = await window.appFunctions.getCurrentUser();
+        document.getElementById('perfil-link').textContent = `Olá, ${user.nome.split(' ')[0]}`;
+      }
+    });
+  </script>
+</body>
+</html>

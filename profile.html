@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Farmácia - Perfil</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <header>
+    <div class="logo">
+      <img src="https://www.nicepng.com/png/detail/204-2049937_logo-de-farmacia-png.png" alt="Logo">
+      <span>Minha Farmácia</span>
+    </div>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <a href="ofertas.html">Ofertas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="profile.html" class="active" id="perfil-link">Perfil</a>
+      <a href="cart.html" id="cart-link">Carrinho</a>
+    </nav>
+  </header>
+
+  <!-- Modal de Login/Cadastro -->
+  <div id="modalLogin" class="modal">
+    <div class="modal-content">
+      <span onclick="fecharModal()" class="close-button">X</span>
+      
+      <!-- Formulário de Cadastro -->
+      <form id="formCadastro">
+        <h2>Cadastro</h2>
+        <input type="text" id="cadastro-nome" placeholder="Nome completo" required>
+        <input type="text" id="cadastro-rg" placeholder="RG" required>
+        <input type="date" id="cadastro-data" placeholder="Data de nascimento" required>
+        <input type="email" id="cadastro-email" placeholder="E-mail" required>
+        <input type="password" id="cadastro-senha" placeholder="Senha" required>
+        <input type="text" id="cadastro-cpf" placeholder="CPF" required>
+        <button class="btn" type="submit">Cadastrar</button>
+        <div class="switch">
+          Já tem conta? <a onclick="toggleForms()">Login</a>
+        </div>
+      </form>
+
+      <!-- Formulário de Login -->
+      <form id="formLogin" class="hidden">
+        <h2>Login</h2>
+        <input type="email" id="login-email" placeholder="E-mail" required>
+        <input type="password" id="login-senha" placeholder="Senha" required>
+        <button class="btn" type="button" id="btn-login">Entrar</button>
+        <div class="switch">
+          Ainda não tem conta? <a onclick="toggleForms()">Cadastre-se</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de Upload de Receita -->
+  <div id="modalReceita" class="modal">
+    <div class="modal-content">
+      <span onclick="fecharModalReceita()" class="close-button">X</span>
+      <h2>Upload de Receita Médica</h2>
+      <p>Envie uma foto da sua receita médica para comprar medicamentos controlados.</p>
+      
+      <form id="formReceita">
+        <input type="text" id="receita-descricao" placeholder="Descrição da receita" required>
+        <div class="file-upload">
+          <label for="receita-foto">Selecionar arquivo</label>
+          <input type="file" id="receita-foto" accept="image/*" required>
+          <span id="file-name">Nenhum arquivo selecionado</span>
+        </div>
+        <button class="btn" type="submit">Enviar Receita</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Conteúdo da Página -->
+  <div class="container">
+    <!-- Mensagem para usuários não logados -->
+    <div id="not-logged-message" class="hidden">
+      <h2>Meu Perfil</h2>
+      <p>Você precisa fazer login para acessar seu perfil.</p>
+      <button class="btn" onclick="abrirModal()">Fazer Login</button>
+    </div>
+
+    <!-- Conteúdo para usuários logados -->
+    <div id="profile-content" class="profile-container hidden">
+      <h2>Meu Perfil</h2>
+      
+      <!-- Informações pessoais -->
+      <div class="profile-section">
+        <h3>Informações Pessoais</h3>
+        <div class="profile-details" id="profile-details">
+          <!-- As informações serão carregadas dinamicamente via JavaScript -->
+        </div>
+      </div>
+      
+      <!-- Histórico de pedidos -->
+      <div class="profile-section">
+        <h3>Histórico de Pedidos</h3>
+        <div class="order-history">
+          <table id="order-history-table">
+            <thead>
+              <tr>
+                <th>Pedido</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="order-history-body">
+              <!-- Os pedidos serão carregados dinamicamente via JavaScript -->
+            </tbody>
+          </table>
+          
+          <div id="no-orders-message" class="hidden">
+            <p>Você ainda não tem pedidos.</p>
+            <a href="index.html" class="btn">Começar a Comprar</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Gerenciamento de receitas -->
+      <div class="profile-section">
+        <h3>Minhas Receitas Médicas</h3>
+        <div class="prescription-management">
+          <ul id="prescriptions-list">
+            <!-- As receitas serão carregadas dinamicamente via JavaScript -->
+          </ul>
+          
+          <div id="no-prescriptions-message" class="hidden">
+            <p>Você ainda não tem receitas cadastradas.</p>
+          </div>
+          
+          <button class="btn-upload-new-prescription" onclick="abrirModalReceita()">Enviar Nova Receita</button>
+        </div>
+      </div>
+      
+      <!-- Botão de logout -->
+      <button id="btn-logout" class="btn">Sair da Conta</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Função para abrir o modal de login
+    function abrirModal() {
+      document.getElementById('modalLogin').style.display = 'flex';
+    }
+
+    // Função para fechar o modal de login
+    function fecharModal() {
+      document.getElementById('modalLogin').style.display = 'none';
+    }
+
+    // Função para abrir o modal de receita
+    function abrirModalReceita() {
+      document.getElementById('modalReceita').style.display = 'flex';
+    }
+
+    // Função para fechar o modal de receita
+    function fecharModalReceita() {
+      document.getElementById('modalReceita').style.display = 'none';
+    }
+
+    // Alterna entre o formulário de cadastro e o de login
+    function toggleForms() {
+      const cadastroForm = document.getElementById('formCadastro');
+      const loginForm = document.getElementById('formLogin');
+      cadastroForm.classList.toggle('hidden');
+      loginForm.classList.toggle('hidden');
+    }
+
+    // Formatar data para exibição
+    function formatarData(dataString) {
+      const data = new Date(dataString);
+      return data.toLocaleDateString('pt-BR');
+    }
+
+    // Carregar perfil do usuário
+    async function carregarPerfil() {
+      const isLoggedIn = await window.appFunctions.isLoggedIn();
+      const notLoggedMessage = document.getElementById('not-logged-message');
+      const profileContent = document.getElementById('profile-content');
+      
+      if (!isLoggedIn) {
+        notLoggedMessage.classList.remove('hidden');
+        profileContent.classList.add('hidden');
+        return;
+      }
+      
+      notLoggedMessage.classList.add('hidden');
+      profileContent.classList.remove('hidden');
+      
+      const user = await window.appFunctions.getCurrentUser();
+      
+      // Preencher informações pessoais
+      const profileDetails = document.getElementById('profile-details');
+      profileDetails.innerHTML = `
+        <p><strong>Nome:</strong> ${user.nome}</p>
+        <p><strong>E-mail:</strong> ${user.email}</p>
+        <p><strong>CPF:</strong> ${user.cpf}</p>
+        <p><strong>RG:</strong> ${user.rg}</p>
+        <p><strong>Data de Nascimento:</strong> ${formatarData(user.data_nascimento)}</p>
+      `;
+      
+      // Carregar histórico de pedidos
+      carregarHistoricoPedidos(user.id);
+      
+      // Carregar receitas
+      carregarReceitas(user.id);
+    }
+
+    // Carregar histórico de pedidos
+    async function carregarHistoricoPedidos(userId) {
+      const pedidos = await window.appFunctions.getPedidosCliente(userId);
+      const orderHistoryBody = document.getElementById('order-history-body');
+      const noOrdersMessage = document.getElementById('no-orders-message');
+      
+      if (pedidos.length === 0) {
+        orderHistoryBody.innerHTML = '';
+        noOrdersMessage.classList.remove('hidden');
+        return;
+      }
+      
+      noOrdersMessage.classList.add('hidden');
+      orderHistoryBody.innerHTML = '';
+      
+      // Ordenar pedidos por data (mais recentes primeiro)
+      pedidos.sort((a, b) => new Date(b.data_pedido) - new Date(a.data_pedido));
+      
+      pedidos.forEach(pedido => {
+        const row = document.createElement('tr');
+        
+        // Determinar classe de status para estilização
+        let statusClass = '';
+        switch(pedido.status_pedido) {
+          case 'Pedido recebido':
+            statusClass = 'status-recebido';
+            break;
+          case 'Pedido aceito':
+            statusClass = 'status-aceito';
+            break;
+          case 'Pedido separado':
+            statusClass = 'status-separado';
+            break;
+          case 'A caminho':
+            statusClass = 'status-caminho';
+            break;
+          case 'Entregue':
+            statusClass = 'status-entregue';
+            break;
+          case 'Pedido cancelado':
+            statusClass = 'status-cancelado';
+            break;
+        }
+        
+        row.innerHTML = `
+          <td>#${pedido.id_pedido}</td>
+          <td>${formatarData(pedido.data_pedido)}</td>
+          <td><span class="pedido-status ${statusClass}">${pedido.status_pedido}</span></td>
+          <td>R$ ${pedido.total.toFixed(2).replace('.', ',')}</td>
+          <td>
+            <button class="btn-view-details" data-id="${pedido.id_pedido}">Detalhes</button>
+            ${pedido.status_pedido === 'A caminho' ? '<button class="btn-track-order" data-id="' + pedido.id_pedido + '">Rastrear</button>' : ''}
+          </td>
+        `;
+        
+        orderHistoryBody.appendChild(row);
+        
+        // Adicionar evento para ver detalhes
+        row.querySelector('.btn-view-details').addEventListener('click', () => {
+          window.location.href = `pedidos.html?id=${pedido.id_pedido}`;
+        });
+        
+        // Adicionar evento para rastrear pedido (se aplicável)
+        const trackButton = row.querySelector('.btn-track-order');
+        if (trackButton) {
+          trackButton.addEventListener('click', () => {
+            window.location.href = `rastreamento.html?id=${pedido.id_pedido}`;
+          });
+        }
+      });
+    }
+
+    // Carregar receitas
+    async function carregarReceitas(userId) {
+      const receitas = await window.appFunctions.getLaudosCliente(userId);
+      const prescriptionsList = document.getElementById('prescriptions-list');
+      const noPrescriptionsMessage = document.getElementById('no-prescriptions-message');
+      
+      if (receitas.length === 0) {
+        prescriptionsList.innerHTML = '';
+        noPrescriptionsMessage.classList.remove('hidden');
+        return;
+      }
+      
+      noPrescriptionsMessage.classList.add('hidden');
+      prescriptionsList.innerHTML = '';
+      
+      // Ordenar receitas por data (mais recentes primeiro)
+      receitas.sort((a, b) => new Date(b.data_laudo) - new Date(a.data_laudo));
+      
+      receitas.forEach(receita => {
+        const li = document.createElement('li');
+        
+        li.innerHTML = `
+          <div class="prescription-info">
+            <span><strong>Descrição:</strong> ${receita.descricao}</span>
+            <span><strong>Data:</strong> ${formatarData(receita.data_laudo)}</span>
+          </div>
+          <button class="btn-view-prescription" data-id="${receita.id_laudo}">Ver Receita</button>
+        `;
+        
+        prescriptionsList.appendChild(li);
+        
+        // Adicionar evento para ver receita
+        li.querySelector('.btn-view-prescription').addEventListener('click', () => {
+          // Em um sistema real, abriria a imagem em um modal ou nova janela
+          alert(`Visualizando receita: ${receita.foto_laudo}`);
+        });
+      });
+    }
+
+    // Atualizar badge do carrinho
+    async function atualizarBadgeCarrinho() {
+      const cartItems = await window.appFunctions.getCart();
+      const cartLink = document.getElementById('cart-link');
+      
+      if (cartItems.length > 0) {
+        const totalItems = cartItems.reduce((sum, item) => sum + item.quantidade, 0);
+        
+        // Verificar se já existe um badge
+        let badge = cartLink.querySelector('.cart-badge');
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'cart-badge';
+          cartLink.appendChild(badge);
+        }
+        
+        badge.textContent = totalItems;
+      } else {
+        // Remover badge se carrinho estiver vazio
+        const badge = cartLink.querySelector('.cart-badge');
+        if (badge) {
+          badge.remove();
+        }
+      }
+    }
+
+    // Configurar formulários de login e cadastro
+    function configurarFormularios() {
+      // Formulário de login
+      document.getElementById('btn-login').addEventListener('click', async () => {
+        const email = document.getElementById('login-email').value;
+        const senha = document.getElementById('login-senha').value;
+        
+        const resultado = await window.appFunctions.login(email, senha);
+        
+        if (resultado.success) {
+          alert('Login realizado com sucesso!');
+          fecharModal();
+          window.location.reload(); // Recarregar para atualizar a UI
+        } else {
+          alert(`Erro no login: ${resultado.message}`);
+        }
+      });
+      
+      // Formulário de cadastro
+      document.getElementById('formCadastro').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const nome = document.getElementById('cadastro-nome').value;
+        const rg = document.getElementById('cadastro-rg').value;
+        const dataNascimento = document.getElementById('cadastro-data').value;
+        const email = document.getElementById('cadastro-email').value;
+        const senha = document.getElementById('cadastro-senha').value;
+        const cpf = document.getElementById('cadastro-cpf').value;
+        
+        const resultado = await window.appFunctions.cadastrar(nome, dataNascimento, email, senha, cpf, rg);
+        
+        if (resultado.success) {
+          alert('Cadastro realizado com sucesso!');
+          fecharModal();
+          window.location.reload(); // Recarregar para atualizar a UI
+        } else {
+          alert(`Erro no cadastro: ${resultado.message}`);
+        }
+      });
+      
+      // Formulário de upload de receita
+      document.getElementById('formReceita').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const descricao = document.getElementById('receita-descricao').value;
+        const fotoInput = document.getElementById('receita-foto');
+        
+        // Simular upload de arquivo (em um sistema real, enviaria para o servidor)
+        const fotoUrl = fotoInput.files.length > 0 ? 
+          URL.createObjectURL(fotoInput.files[0]) : 
+          'uploads/laudos/receita_default.jpg';
+        
+        // Verificar se usuário está logado
+        if (!await window.appFunctions.isLoggedIn()) {
+          alert('É necessário fazer login para enviar receitas');
+          fecharModalReceita();
+          abrirModal();
+          return;
+        }
+        
+        const user = await window.appFunctions.getCurrentUser();
+        
+        // Criar laudo no backend
+        const resultado = await window.appFunctions.uploadLaudo(user.id, descricao, fotoUrl);
+        
+        if (resultado.success) {
+          alert('Receita enviada com sucesso!');
+          fecharModalReceita();
+          window.location.reload(); // Recarregar para atualizar a lista de receitas
+        } else {
+          alert(`Erro ao enviar receita: ${resultado.message}`);
+        }
+      });
+      
+      // Mostrar nome do arquivo selecionado
+      document.getElementById('receita-foto').addEventListener('change', (e) => {
+        const fileName = e.target.files[0] ? e.target.files[0].name : 'Nenhum arquivo selecionado';
+        document.getElementById('file-name').textContent = fileName;
+      });
+      
+      // Botão de logout
+      document.getElementById('btn-logout').addEventListener('click', async () => {
+        await window.appFunctions.logout();
+        window.location.href = 'index.html';
+      });
+    }
+
+    // Inicialização quando o DOM estiver carregado
+    document.addEventListener('DOMContentLoaded', async () => {
+      carregarPerfil();
+      configurarFormularios();
+      atualizarBadgeCarrinho();
+      
+      // Atualizar UI com base no estado de login
+      if (await window.appFunctions.isLoggedIn()) {
+        const user = await window.appFunctions.getCurrentUser();
+        document.getElementById('perfil-link').textContent = `Olá, ${user.nome.split(' ')[0]}`;
+      }
+    });
+  </script>
+</body>
+</html>

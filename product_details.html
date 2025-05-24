@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Farmácia - Detalhes do Produto</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <header>
+    <div class="logo">
+      <img src="https://www.nicepng.com/png/detail/204-2049937_logo-de-farmacia-png.png" alt="Logo">
+      <span>Minha Farmácia</span>
+    </div>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <a href="ofertas.html">Ofertas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="profile.html" id="perfil-link">Perfil</a>
+      <a href="cart.html" id="cart-link">Carrinho</a>
+    </nav>
+  </header>
+
+  <!-- Modal de Login/Cadastro -->
+  <div id="modalLogin" class="modal">
+    <div class="modal-content">
+      <span onclick="fecharModal()" class="close-button">X</span>
+      
+      <!-- Formulário de Cadastro -->
+      <form id="formCadastro">
+        <h2>Cadastro</h2>
+        <input type="text" id="cadastro-nome" placeholder="Nome completo" required>
+        <input type="text" id="cadastro-rg" placeholder="RG" required>
+        <input type="date" id="cadastro-data" placeholder="Data de nascimento" required>
+        <input type="email" id="cadastro-email" placeholder="E-mail" required>
+        <input type="password" id="cadastro-senha" placeholder="Senha" required>
+        <input type="text" id="cadastro-cpf" placeholder="CPF" required>
+        <button class="btn" type="submit">Cadastrar</button>
+        <div class="switch">
+          Já tem conta? <a onclick="toggleForms()">Login</a>
+        </div>
+      </form>
+
+      <!-- Formulário de Login -->
+      <form id="formLogin" class="hidden">
+        <h2>Login</h2>
+        <input type="email" id="login-email" placeholder="E-mail" required>
+        <input type="password" id="login-senha" placeholder="Senha" required>
+        <button class="btn" type="button" id="btn-login">Entrar</button>
+        <div class="switch">
+          Ainda não tem conta? <a onclick="toggleForms()">Cadastre-se</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de Upload de Receita -->
+  <div id="modalReceita" class="modal">
+    <div class="modal-content">
+      <span onclick="fecharModalReceita()" class="close-button">X</span>
+      <h2>Upload de Receita Médica</h2>
+      <p>Para comprar produtos que exigem receita médica, é necessário enviar uma foto da receita.</p>
+      
+      <form id="formReceita">
+        <input type="text" id="receita-descricao" placeholder="Descrição da receita" required>
+        <div class="file-upload">
+          <label for="receita-foto">Selecionar arquivo</label>
+          <input type="file" id="receita-foto" accept="image/*" required>
+          <span id="file-name">Nenhum arquivo selecionado</span>
+        </div>
+        <button class="btn" type="submit">Enviar Receita</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Conteúdo da Página -->
+  <div class="container">
+    <div class="product-details-container" id="product-details">
+      <!-- Os detalhes do produto serão carregados dinamicamente via JavaScript -->
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Variáveis globais
+    let currentProduct = null;
+    let quantity = 1;
+    
+    // Função para abrir o modal de login
+    function abrirModal() {
+      document.getElementById('modalLogin').style.display = 'flex';
+    }
+
+    // Função para fechar o modal de login
+    function fecharModal() {
+      document.getElementById('modalLogin').style.display = 'none';
+    }
+
+    // Função para abrir o modal de receita
+    function abrirModalReceita() {
+      document.getElementById('modalReceita').style.display = 'flex';
+    }
+
+    // Função para fechar o modal de receita
+    function fecharModalReceita() {
+      document.getElementById('modalReceita').style.display = 'none';
+    }
+
+    // Alterna entre o formulário de cadastro e o de login
+    function toggleForms() {
+      const cadastroForm = document.getElementById('formCadastro');
+      const loginForm = document.getElementById('formLogin');
+      cadastroForm.classList.toggle('hidden');
+      loginForm.classList.toggle('hidden');
+    }
+
+    // Obter ID do produto da URL
+    function getProductIdFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return parseInt(urlParams.get('id'));
+    }
+
+    // Carregar detalhes do produto
+    async function carregarDetalhesProduto() {
+      const productId = getProductIdFromUrl();
+      if (!productId) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      currentProduct = await window.appFunctions.getProdutoById(productId);
+      if (!currentProduct) {
+        alert('Produto não encontrado');
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      const productDetailsContainer = document.getElementById('product-details');
+      
+      // Criar seção de imagem
+      const imageSection = document.createElement('div');
+      imageSection.className = 'product-image-section';
+      imageSection.innerHTML = `
+        <img src="${currentProduct.foto}" alt="${currentProduct.nome}">
+      `;
+      
+      // Criar seção de informações
+      const infoSection = document.createElement('div');
+      infoSection.className = 'product-info-section';
+      
+      // Verificar se o produto requer receita
+      const prescricaoNotice = currentProduct.prescricao ? `
+        <div class="prescription-notice">
+          <p><strong>Atenção:</strong> Este produto requer receita médica.</p>
+          <p>Você precisará enviar uma foto da receita antes de finalizar a compra.</p>
+          <button class="btn-upload-prescription" onclick="abrirModalReceita()">Enviar Receita</button>
+        </div>
+      ` : '';
+      
+      infoSection.innerHTML = `
+        <h2>${currentProduct.nome}</h2>
+        <p>${currentProduct.descricao}</p>
+        <div class="price">R$ ${currentProduct.preco.toFixed(2).replace('.', ',')}</div>
+        
+        ${prescricaoNotice}
+        
+        <div class="quantity-selector">
+          <label for="quantity">Quantidade:</label>
+          <input type="number" id="quantity" min="1" value="1">
+        </div>
+        
+        <button id="btn-add-to-cart" class="btn-add-to-cart">
+          <span>Adicionar ao Carrinho</span>
+        </button>
+      `;
+      
+      // Adicionar seções ao container
+      productDetailsContainer.appendChild(imageSection);
+      productDetailsContainer.appendChild(infoSection);
+      
+      // Configurar eventos
+      const quantityInput = document.getElementById('quantity');
+      quantityInput.addEventListener('change', () => {
+        quantity = parseInt(quantityInput.value);
+        if (quantity < 1) {
+          quantity = 1;
+          quantityInput.value = 1;
+        }
+      });
+      
+      const addToCartButton = document.getElementById('btn-add-to-cart');
+      addToCartButton.addEventListener('click', adicionarAoCarrinho);
+    }
+
+    // Adicionar ao carrinho
+    async function adicionarAoCarrinho() {
+      // Verificar se produto requer receita e usuário está logado
+      if (currentProduct.prescricao && !await window.appFunctions.isLoggedIn()) {
+        alert('É necessário fazer login para comprar produtos que exigem receita médica');
+        abrirModal();
+        return;
+      }
+      
+      // Adicionar ao carrinho
+      const resultado = await window.appFunctions.addToCart(currentProduct.id_produto, quantity);
+      
+      if (resultado.success) {
+        alert(`${currentProduct.nome} adicionado ao carrinho!`);
+        atualizarBadgeCarrinho();
+        
+        // Redirecionar para o carrinho
+        window.location.href = 'cart.html';
+      } else {
+        alert(`Erro ao adicionar ao carrinho: ${resultado.message}`);
+      }
+    }
+
+    // Atualizar badge do carrinho
+    async function atualizarBadgeCarrinho() {
+      const cartItems = await window.appFunctions.getCart();
+      const cartLink = document.getElementById('cart-link');
+      
+      if (cartItems.length > 0) {
+        const totalItems = cartItems.reduce((sum, item) => sum + item.quantidade, 0);
+        
+        // Verificar se já existe um badge
+        let badge = cartLink.querySelector('.cart-badge');
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'cart-badge';
+          cartLink.appendChild(badge);
+        }
+        
+        badge.textContent = totalItems;
+      } else {
+        // Remover badge se carrinho estiver vazio
+        const badge = cartLink.querySelector('.cart-badge');
+        if (badge) {
+          badge.remove();
+        }
+      }
+    }
+
+    // Configurar formulários de login e cadastro
+    function configurarFormularios() {
+      // Formulário de login
+      document.getElementById('btn-login').addEventListener('click',async () => {
+        const email = document.getElementById('login-email').value;
+        const senha = document.getElementById('login-senha').value;
+        
+        const resultado = await window.appFunctions.login(email, senha);
+        
+        if (resultado.success) {
+          alert('Login realizado com sucesso!');
+          fecharModal();
+          window.location.reload(); // Recarregar para atualizar a UI
+        } else {
+          alert(`Erro no login: ${resultado.message}`);
+        }
+      });
+      
+      // Formulário de cadastro
+      document.getElementById('formCadastro').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const nome = document.getElementById('cadastro-nome').value;
+        const rg = document.getElementById('cadastro-rg').value;
+        const dataNascimento = document.getElementById('cadastro-data').value;
+        const email = document.getElementById('cadastro-email').value;
+        const senha = document.getElementById('cadastro-senha').value;
+        const cpf = document.getElementById('cadastro-cpf').value;
+        
+        const resultado = await window.appFunctions.cadastrar(nome, dataNascimento, email, senha, cpf, rg);
+        
+        if (resultado.success) {
+          alert('Cadastro realizado com sucesso!');
+          fecharModal();
+          window.location.reload(); // Recarregar para atualizar a UI
+        } else {
+          alert(`Erro no cadastro: ${resultado.message}`);
+        }
+      });
+      
+      // Formulário de upload de receita
+      document.getElementById('formReceita').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const descricao = document.getElementById('receita-descricao').value;
+        const fotoInput = document.getElementById('receita-foto');
+        
+        // Simular upload de arquivo (em um sistema real, enviaria para o servidor)
+        const fotoUrl = fotoInput.files.length > 0 ? 
+          URL.createObjectURL(fotoInput.files[0]) : 
+          'uploads/laudos/receita_default.jpg';
+        
+        // Verificar se usuário está logado
+        if (!await window.appFunctions.isLoggedIn()) {
+          alert('É necessário fazer login para enviar receitas');
+          fecharModalReceita();
+          abrirModal();
+          return;
+        }
+        
+        const user = await window.appFunctions.getCurrentUser();
+        
+        // Criar laudo no backend
+        const resultado = await window.appFunctions.uploadLaudo(user.id, descricao, fotoUrl);
+        
+        if (resultado.success) {
+          alert('Receita enviada com sucesso!');
+          fecharModalReceita();
+          
+          // Perguntar se deseja adicionar ao carrinho
+          if (confirm('Receita enviada com sucesso! Deseja adicionar o produto ao carrinho?')) {
+            adicionarAoCarrinho();
+          }
+        } else {
+          alert(`Erro ao enviar receita: ${resultado.message}`);
+        }
+      });
+      
+      // Mostrar nome do arquivo selecionado
+      document.getElementById('receita-foto').addEventListener('change', (e) => {
+        const fileName = e.target.files[0] ? e.target.files[0].name : 'Nenhum arquivo selecionado';
+        document.getElementById('file-name').textContent = fileName;
+      });
+    }
+
+    // Configurar link de perfil
+    function configurarPerfilLink() {
+      const perfilLink = document.getElementById('perfil-link');
+      
+      perfilLink.addEventListener('click', async (e) => {
+        if (!await window.appFunctions.isLoggedIn()) {
+          e.preventDefault();
+          abrirModal();
+        }
+      });
+    }
+
+    // Inicialização quando o DOM estiver carregado
+    document.addEventListener('DOMContentLoaded', async () => {
+      carregarDetalhesProduto();
+      configurarFormularios();
+      configurarPerfilLink();
+      atualizarBadgeCarrinho();
+      
+      // Atualizar UI com base no estado de login
+      if (await window.appFunctions.isLoggedIn()) {
+        const user = await window.appFunctions.getCurrentUser();
+        document.getElementById('perfil-link').textContent = `Olá, ${user.nome.split(' ')[0]}`;
+      }
+    });
+  </script>
+</body>
+</html>
